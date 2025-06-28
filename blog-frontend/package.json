@@ -13,6 +13,7 @@
     "@tailwindcss/typography": "^0.5.16",
     "axios": "^1.10.0",
     "froala-editor": "^4.5.2",
+    "lucide-react": "^0.525.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-froala-wysiwyg": "^4.5.2",
