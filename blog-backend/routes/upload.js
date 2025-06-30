@@ -1,36 +1,9 @@
 const express = require("express");
-const multer = require("multer");
 const path = require("path");
+const fs = require("fs");
+const upload = require("../config/multer");
 
 const router = express.Router();
-
-// Multer storage configuration
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "uploads/");
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    cb(null, uniqueSuffix + path.extname(file.originalname));
-  },
-});
-
-// File filter (only accept images)
-const fileFilter = (req, file, cb) => {
-  const allowedTypes = /jpeg|jpg|png|gif/;
-  const extname = allowedTypes.test(
-    path.extname(file.originalname).toLowerCase()
-  );
-  const mimetype = allowedTypes.test(file.mimetype);
-
-  if (extname && mimetype) {
-    cb(null, true);
-  } else {
-    cb(new Error("Only image files are allowed!"), false);
-  }
-};
-
-const upload = multer({ storage, fileFilter });
 
 // Upload route
 router.post("/upload", upload.single("image"), (req, res) => {
@@ -45,6 +18,56 @@ router.post("/upload", upload.single("image"), (req, res) => {
   res.status(200).json({
     message: "File uploaded successfully",
     url: fileUrl,
+  });
+});
+
+// Get image route
+router.get("/:file", (req, res) => {
+  const { file } = req.params;
+
+  if (!file) {
+    return res.status(400).json({ message: "No URL provided" });
+  }
+
+  // Extract filename from URL
+  // const filename = url.split("/").pop();
+
+  const filePath = path.join(__dirname, "../images", file);
+
+  res.sendFile(filePath, (err) => {
+    if (err) {
+      console.error("Error sending file:", err);
+      return res.status(404).json({ message: "Image not found" });
+    }
+  });
+});
+router.delete("/:file", (req, res) => {
+  const { file } = req.params;
+
+  if (!file) {
+    return res.status(400).json({ message: "No URL provided" });
+  }
+
+  // Extract filename from URL
+  // const filename = url.split("/").pop();
+
+  const filePath = path.join(__dirname, "../images", file);
+
+  // Check if file exists
+  fs.access(filePath, fs.constants.F_OK, (err) => {
+    if (err) {
+      return res.status(404).json({ message: "Image not found" });
+    }
+
+    // Delete the file
+    fs.unlink(filePath, (err) => {
+      if (err) {
+        console.error("Error deleting file:", err);
+        return res.status(500).json({ message: "Error deleting image" });
+      }
+
+      res.status(200).json({ message: "Image deleted successfully" });
+    });
   });
 });
 

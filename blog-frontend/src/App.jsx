@@ -1,7 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 import BlogManagementPage from "./BlogManagementPage";
 import BlogEditor from "./BlogEditor";
-import BlogEditorUpdate from "./BlogEditorUpdate";
 import BlogViewPage from "./BlogViewPage";
 
 function App() {
@@ -9,8 +8,8 @@ function App() {
     <Routes>
       <Route path="/" element={<BlogManagementPage />} />
       <Route path="/create" element={<BlogEditor />} />
-      <Route path="/update/:slug" element={<BlogEditorUpdate />} />
-      <Route path="/blog/:slug" element={<BlogViewPage />} />
+      <Route path="/edit-blog/:slug" element={<BlogEditor />} />
+      <Route path="/blogs/:slug" element={<BlogViewPage />} />
     </Routes>
   );
 }
